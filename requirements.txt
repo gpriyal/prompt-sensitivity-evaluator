@@ -1,0 +1,11 @@
+streamlit
+groq
+google-generativeai
+bert-score
+sentence-transformers
+plotly
+pandas
+python-dotenv
+detoxify
+mistralai
+torchvision

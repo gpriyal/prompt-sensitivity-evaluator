@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "category": "Science",
+    "question": "How does photosynthesis work?"
+  },
+  {
+    "id": 2,
+    "category": "Coding",
+    "question": "What is recursion in programming?"
+  },
+  {
+    "id": 3,
+    "category": "Medical",
+    "question": "What are the symptoms of diabetes?"
+  },
+  {
+    "id": 4,
+    "category": "History",
+    "question": "What caused World War 1?"
+  },
+  {
+    "id": 5,
+    "category": "General",
+    "question": "What is the impact of social media on mental health?"
+  },
+  {
+    "id": 6,
+    "category": "Science",
+    "question": "Explain Newton's three laws of motion."
+  },
+  {
+    "id": 7,
+    "category": "Coding",
+    "question": "What is the difference between a list and a tuple in Python?"
+  },
+  {
+    "id": 8,
+    "category": "General",
+    "question": "What are the pros and cons of remote work?"
+  },
+  {
+    "id": 9,
+    "category": "History",
+    "question": "What was the significance of the Industrial Revolution?"
+  },
+  {
+    "id": 10,
+    "category": "Medical",
+    "question": "How does the immune system fight infections?"
+  }
+]
