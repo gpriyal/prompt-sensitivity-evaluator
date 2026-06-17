@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import json
 import pandas as pd
@@ -6,6 +7,11 @@ from core.llm_runner import run_variants_on_all_models
 from core.evaluator import evaluate_all
 from core.llm_judge import judge_all
 from core.aggregator import aggregate, generate_findings
+from core.batch_runner import run_batch, generate_batch_findings
+
+from ui.charts import (variant_bar_chart, model_bar_chart, heatmap_chart,
+    metric_comparison_chart, psi_chart, batch_win_chart, batch_model_chart
+)
 
 st.set_page_config(
     page_title="Prompt Sensitivity Evaluator",
@@ -167,10 +173,6 @@ if run_button:
         st.markdown("---")
         st.subheader("Visual Analysis")
 
-        from ui.charts import (variant_bar_chart, model_bar_chart,
-            heatmap_chart, metric_comparison_chart, psi_chart
-        )
-
         # Bar charts side by side
         col1, col2 = st.columns(2)
         with col1:
@@ -228,10 +230,6 @@ if run_button:
             use_container_width=True
         )
 
-        # store in session state for Day 3 charts
-        st.session_state["last_results"] = results
-        st.session_state["last_question"] = base_question
-
 
 # BATCH EXPERIMENT SECTION
 st.markdown("---")
@@ -249,7 +247,6 @@ with st.expander("About this experiment", expanded=False):
     - Cached results load instantly on every subsequent visit
     """)
 
-import os
 cache_exists = os.path.exists("data/batch_cache.json")
 
 col1, col2 = st.columns([2, 1])
@@ -269,9 +266,6 @@ with col2:
     )
 
 if run_batch_btn:
-    from core.batch_runner import run_batch
-    from ui.charts import batch_win_chart, batch_model_chart
-
     if force_rerun or not cache_exists:
         progress_bar = st.progress(0)
         status_text  = st.empty()
@@ -343,21 +337,21 @@ if run_batch_btn:
         "of composite scores across the 8 prompt variants per question. "
     )
 
+    def _sensitivity_label(v):
+        if v < 0.05:   return "Extremely robust"
+        elif v < 0.10: return "Robust"
+        elif v < 0.20: return "Moderately sensitive"
+        else:          return "Highly sensitive"
+
     psi_batch_df = pd.DataFrame([
-        {
-            "Model": k,
-            "Avg PSI": v,
-            "Sensitivity": "Low" if v < 0.05 else "Medium" if v < 0.10 else "High"
-        }
+        {"Model": k, "Avg PSI": v, "Sensitivity": _sensitivity_label(v)}
         for k, v in batch["model_psi"].items()
     ])
     st.dataframe(psi_batch_df, use_container_width=True, hide_index=True)
 
     # Findings Table (Batch)
     st.markdown("---")
-    st.subheader("📝 Findings Summary")
-
-    from core.batch_runner import generate_batch_findings
+    st.subheader("Findings Summary")
     batch_findings_df = pd.DataFrame(generate_batch_findings(batch))
     st.dataframe(batch_findings_df, use_container_width=True, hide_index=True)    
 
