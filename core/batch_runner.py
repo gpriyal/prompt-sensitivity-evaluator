@@ -11,6 +11,10 @@ from core.aggregator import aggregate
 
 CACHE_PATH = "data/batch_cache.json"
 
+REQUIRED_KEYS = [
+    "total_questions", "per_question", "variant_win_counts",
+    "variant_avg_scores", "model_avg_scores", "category_variance", "model_psi"
+]
 
 def run_batch(progress_callback=None, use_cache=True) -> dict:
     """
@@ -21,8 +25,11 @@ def run_batch(progress_callback=None, use_cache=True) -> dict:
     if use_cache and os.path.exists(CACHE_PATH):
         with open(CACHE_PATH) as f:
             cached = json.load(f)
-        print(f"Loaded batch results from cache ({CACHE_PATH})")
-        return cached
+        if all(key in cached for key in REQUIRED_KEYS):
+            print(f"Loaded batch results from cache ({CACHE_PATH})")
+            return cached
+        else:
+            print("Cache is stale — re-running.")
 
     with open("data/sample_questions.json") as f:
         questions = json.load(f)
@@ -46,7 +53,8 @@ def run_batch(progress_callback=None, use_cache=True) -> dict:
                 "best_variant":   result["best_variant"],
                 "worst_variant":  result["worst_variant"],
                 "variant_scores": result["variant_summary"],
-                "model_scores":   result["model_summary"]
+                "model_scores":   result["model_summary"],
+                "psi_table":      result.get("psi_table", [])
             })
 
         except Exception as e:
@@ -69,6 +77,7 @@ def compile_batch_findings(per_question: list[dict]) -> dict:
     variant_scores = {}
     model_scores   = {}
     category_data  = {}
+    model_psi_values = {}
 
     for r in per_question:
         winner = r["best_variant"]
@@ -80,6 +89,9 @@ def compile_batch_findings(per_question: list[dict]) -> dict:
 
         for model, score in r["model_scores"].items():
             model_scores.setdefault(model, []).append(score)
+            
+        for entry in r.get("psi_table", []):
+            model_psi_values.setdefault(entry["model"], []).append(entry["psi"])
 
         cat = r["category"]
         category_data.setdefault(cat, []).append(r["variant_scores"])
@@ -92,13 +104,20 @@ def compile_batch_findings(per_question: list[dict]) -> dict:
         all_scores = [s for d in score_dicts for s in d.values()]
         category_variance[cat] = round(float(np.std(all_scores)), 4) if all_scores else 0.0
 
+    model_psi = {
+        k: round(sum(v) / len(v), 4)
+        for k, v in model_psi_values.items()
+    }
+    model_psi = dict(sorted(model_psi.items(), key=lambda x: x[1]))  
+
     return {
         "total_questions": len(per_question),
         "per_question": per_question,
         "variant_win_counts": dict(sorted(variant_wins.items(), key=lambda x: x[1], reverse=True)),
         "variant_avg_scores": dict(sorted(variant_avg.items(), key=lambda x: x[1], reverse=True)),
         "model_avg_scores": dict(sorted(model_avg.items(), key=lambda x: x[1], reverse=True)),
-        "category_variance": category_variance
+        "category_variance": category_variance,
+        "model_psi" : model_psi
     }
 
 
