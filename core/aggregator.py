@@ -76,14 +76,7 @@ def compute_psi_table(df: pd.DataFrame) -> list[dict]:
 def aggregate(judged_variants: list[dict]) -> dict:
     """
     Master aggregation function.
-
-    Returns a dict with:
-        rows          - flat list of all (variant x model) records
-        df            - pandas DataFrame for easy charting
-        best_variant  - highest avg composite score across models
-        worst_variant - lowest avg composite score across models
-        model_summary - per-model average composite score
-        variant_summary - per-variant average composite score
+    Returns rows, df, best_variant, worst_variant, model_summary, variant_summary, and psi_table
     """
     rows = []
 

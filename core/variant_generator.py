@@ -26,11 +26,6 @@ EXPERT_PERSONAS = {
 
 
 def generate_variants(base_question: str, category: str = "General") -> list[dict]:
-    """
-    Returns 8 prompt variants modelling distinct human framings
-    of the same base question.
-    """
-
     persona = EXPERT_PERSONAS.get(category, "a subject-matter expert")
     variants = [
         {

@@ -59,9 +59,9 @@ def is_truncated(text: str) -> bool:
 # 4. BUILD REFERENCE
 def build_reference(model_outputs: list[dict]) -> str:
     """
-    Uses Llama-3.3-70B's output (first in model_outputs, our strongest model) 
-    as the reference for BERTScore. Falls back to the next valid (non-truncated) 
-    output if the flagship model's output was truncated or empty.
+    Uses the first valid non-truncated output as the BERTScore reference.
+    Since Llama-3.3-70B is always first in model_outputs, this effectively
+    anchors scoring against the strongest model's response where available.
     """
     valid = [
         m["output"] for m in model_outputs
