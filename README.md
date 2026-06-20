@@ -2,8 +2,6 @@
 
 A research tool that measures how prompt phrasing affects LLM output quality across multiple models — empirically, not anecdotally.
 
----
-
 ## What It Does
 - Generates 8 stylistically distinct prompt variants from any input question
 - Runs each variant through 3 models across 2 providers
@@ -11,16 +9,12 @@ A research tool that measures how prompt phrasing affects LLM output quality acr
 - Computes a Prompt Sensitivity Index (PSI) to quantify model robustness
 - Runs batch experiments across 10 questions and surfaces cross-question findings
 
----
-
 ## Models
 | Model | Provider |
 |---|---|
 | Llama-3.3-70B | Groq |
 | Llama-3.1-8B | Groq |
 | Mistral-Small | Mistral AI |
-
----
 
 ## Prompt Variant Taxonomy
 | Style | What It Tests |
@@ -33,8 +27,6 @@ A research tool that measures how prompt phrasing affects LLM output quality acr
 | Polite / Formal | Whether politeness affects output |
 | Aggressive / Demanding | Whether commanding tone triggers hedging |
 | Structured / Formatted | Whether format constraints affect content |
-
----
 
 ## Evaluation Metrics
 | Metric | Method | Weight |
@@ -52,8 +44,6 @@ scores across all 8 variants per model. Lower PSI = more robust model.
 | 0.05 – 0.10 | Robust |
 | 0.10 – 0.20 | Moderately sensitive |
 | > 0.20 | Highly sensitive |
-
----
 
 ## Tech Stack
 Python · Streamlit · Groq API · Mistral API · 
